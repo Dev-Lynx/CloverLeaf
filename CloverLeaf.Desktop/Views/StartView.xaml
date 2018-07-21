@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="CloverLeaf.Desktop.Views.StartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CloverLeaf.Desktop.Views"
+             xmlns:prism="http://prismlibrary.com/"
+             mc:Ignorable="d" d:DesignHeight="520" d:DesignWidth="520"
+             Background="{DynamicResource BackgroundBrush}"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid>
+        <TextBlock LineHeight=".01" Margin="30" x:Name="WelcomeBox" TextAlignment="Center" FontSize="80" FontWeight="Bold" Opacity=".7" VerticalAlignment="Center" FontFamily="Calibri">
+            Clover<Run Text="Leaf" Foreground="{DynamicResource AuxBrush}"/>
+            <!-- Logo goes here -->
+            <LineBreak/>
+            <Run FontSize="40" Foreground="{DynamicResource IntenseAuxBrush}">Barrel Racing</Run>
+            <LineBreak/>
+            <Run FontSize="40" Foreground="{DynamicResource IntenseAuxBrush}">Manager</Run>
+        </TextBlock>
+    </Grid>
+</UserControl>

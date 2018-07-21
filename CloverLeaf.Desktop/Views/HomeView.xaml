@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="CloverLeaf.Desktop.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CloverLeaf.Desktop.Views"
+             xmlns:prism="http://prismlibrary.com/" Name="ParentControl"
+             mc:Ignorable="d" Background="{DynamicResource BackgroundBrush}"
+             d:DesignHeight="520" d:DesignWidth="520" 
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <DockPanel Margin="20 10">
+        <TextBlock DockPanel.Dock="Top" Text="Register Riders" Foreground="{DynamicResource AuxBrush}" FontSize="40" FontWeight="Bold" Opacity=".7"/>
+        <DockPanel DockPanel.Dock="Top" Margin="10 20 30 5">
+            <TextBlock Text="Rider:" Width="100" TextAlignment="Left"/>
+            <ComboBox IsTextSearchEnabled="True" IsTextSearchCaseSensitive="True" StaysOpenOnEdit="True" TextSearch.TextPath="{Binding Name}" SelectedItem="{Binding Rider, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding DatabaseManager.Riders}" Text="{Binding RiderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEditable="True">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="10 20 30 5">
+            <TextBlock Text="Horse:" Width="100"/>
+            <ComboBox IsTextSearchEnabled="True" IsTextSearchCaseSensitive="True" StaysOpenOnEdit="True" TextSearch.TextPath="{Binding Name}" SelectedItem="{Binding Horse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding DatabaseManager.Horses}" Text="{Binding HorseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEditable="True">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </DockPanel>
+
+        <Button DockPanel.Dock="Top" Content="Add" IsDefault="True" HorizontalAlignment="Right" Margin="0 20 30 5" Padding="40 5" Command="{Binding AddCommand}" Visibility="{Binding CanAdd, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}" />
+        
+
+        <Grid Margin="20 20 40 10" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="RIDERS" TextAlignment="Center" Foreground="{DynamicResource AuxBrush}" FontSize="20" FontWeight="Bold" Opacity=".7"/>
+            <TextBlock Text="HORSES" Grid.Column="1" TextAlignment="Center" Foreground="{DynamicResource AuxBrush}" FontSize="20" FontWeight="Bold" Opacity=".7"/>
+        </Grid>
+
+        <Button Content="Let's Get Started!" Command="{Binding StartCommand}" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Margin="20 5" Padding="10" Visibility="{Binding CanStart, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        
+        <Border Margin="20 0 20 10" BorderBrush="{DynamicResource FaintAuxBrush}" BorderThickness="0" CornerRadius="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Coordinator.Contest.Teams}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2 4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Padding="0 2" Text="{Binding Rider.Name}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Opacity=".7" Foreground="White" Background="{DynamicResource AuxBrush}"/>
+                                <TextBlock Padding="0 2" Grid.Column="1" Text="{Binding Horse.Name}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Opacity=".7" Foreground="White" Background="{DynamicResource FaintAuxBrush}"/>
+                                <Button Margin="4 0" Content="X" Padding="6 3" VerticalAlignment="Center" Grid.Column="2" Command="{Binding ElementName=ParentControl, Path=DataContext.RemoveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Grid, Mode=FindAncestor}}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </DockPanel>
+</UserControl>
