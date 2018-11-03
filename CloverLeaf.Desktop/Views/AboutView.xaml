@@ -15,7 +15,123 @@
         </Grid.RowDefinitions>
 
         <DockPanel Margin="0 20">
-            <Image DockPanel.Dock="Left" Margin="10 0 0 0" Width="180" Source="{DynamicResource BarrelRacingLogo}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Aliased"/>
+            <Border RenderTransformOrigin=".5, .5" BorderBrush="#00FFFFFF" BorderThickness="0" Padding="3" Opacity=".7">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                        <RotateTransform Angle="0"/>
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <Border.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <Trigger Property="Border.IsMouseOver" Value="True">
+                                <Setter Property="Border.Opacity" Value="1"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[0].ScaleX" 
+                                                             From="1" To=".9" BeginTime="00:00:00" Duration="00:00:0.3" />
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[0].ScaleY" 
+                                                             From="1" To=".9" BeginTime="00:00:00" Duration="00:00:0.3" />
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[1].Angle" 
+                                                             From="0" To="-45" BeginTime="00:00:00" Duration="00:00:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[0].ScaleX" 
+                                                             From=".9" To="1" BeginTime="00:00:00" Duration="00:00:0.2" />
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[0].ScaleY" 
+                                                             From=".9" To="1" BeginTime="00:00:00" Duration="00:00:0.2" />
+                                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[1].Angle" 
+                                                             From="-45" To="0" BeginTime="00:00:00" Duration="00:00:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <!--
+                                        <DataTrigger Binding="{Binding Coordinator.CanSave}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[1].Angle" 
+                                                             From="0" To="360" BeginTime="00:00:00" Duration="00:00:0.5" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[1].Angle" 
+                                                             From="360" To="0" BeginTime="00:00:00" Duration="00:00:0.5" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                        -->
+                            <DataTrigger Binding="{Binding Coordinator.CanSave}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Padding" From="0" To="35 0 0 0" Duration="00:00:0.2" />
+                                            <!--
+                                                <ThicknessAnimation Storyboard.TargetProperty="Padding" From="35 0 0 0" To="35 0 0 3" BeginTime="00:00:03" Duration="00:00:0.2" RepeatBehavior="Forever"  />
+                                                <ThicknessAnimation Storyboard.TargetProperty="Padding" From="35 0 0 3" To="35 0 0 0" BeginTime="00:00:03.2" Duration="00:00:0.2" RepeatBehavior="Forever" />
+                                                -->
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="35 0 0 0" To="0" Duration="00:00:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Button RenderTransformOrigin=".5, .5" Template="{DynamicResource ContentOnlyTemplate}" DockPanel.Dock="Left" Margin="10 0 0 0" Width="150">
+                    <Button.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="0"/>
+                        </TransformGroup>
+                    </Button.RenderTransform>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <EventTrigger RoutedEvent="Click">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[0].Angle" 
+                                                             From="-45" To="720" BeginTime="00:00:00" Duration="00:00:01" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseRightButtonUp">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).Children[0].Angle" 
+                                                             From="45" To="-720" BeginTime="00:00:00" Duration="00:00:01" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="{DynamicResource CloverLeafImage}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Aliased"/>
+                </Button>
+            </Border>
+            
+            
             <TextBlock VerticalAlignment="Center" DockPanel.Dock="Top" FontSize="60" FontWeight="Bold" Opacity=".7" Height="65" Margin="10 0">
                 Clover<Run Foreground="{DynamicResource AuxBrush}">Leaf</Run>
             </TextBlock>
@@ -29,7 +145,10 @@
 
         <DockPanel Grid.Row="2">
             <TextBlock FontSize="20" Margin="20 2 0 2" FontWeight="Bold" Opacity=".7">
-                Forged wih <Hyperlink Command="{Binding VisitLoveCommand}">♥</Hyperlink> by
+                Forged wih 
+                <ContentControl Template="{StaticResource BeatingControl}" HorizontalContentAlignment="Center" VerticalContentAlignment="Bottom" Margin="0 0 0 -10">
+                    <Hyperlink Command="{Binding VisitLoveCommand}">♥</Hyperlink>
+                </ContentControl> by
                 <Hyperlink NavigateUri="https://www.fiverr.com/s2/eb22b7af9e" Command="{Binding VisitMeCommand}">
                     Prince
                 </Hyperlink>

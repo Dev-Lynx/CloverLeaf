@@ -83,6 +83,11 @@ namespace CloverLeaf.Desktop.ViewModels
             AddCommand = new DelegateCommand(OnAdd);
             StartCommand = new DelegateCommand(OnStart);
             RemoveCommand = new DelegateCommand<object>(OnRemove);
+
+            UIHelper.LoadComplete += (s, e) =>
+            {
+                RaisePropertyChanged("CanStart");
+            };
         }
         #endregion
 
@@ -119,7 +124,7 @@ namespace CloverLeaf.Desktop.ViewModels
 
         async void OnStart()
         {
-            Coordinator.GenerateTeams();
+            Coordinator.GenerateTeams(true);
             await ((FrameworkElement)View).FadeOut(3);
             RegionManager.RequestNavigateToView(Core.MAIN_REGION, Core.RUN_VIEW);
             ((FrameworkElement)View).Opacity = 1;

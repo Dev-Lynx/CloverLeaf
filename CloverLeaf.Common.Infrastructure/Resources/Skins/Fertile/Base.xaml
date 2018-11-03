@@ -2,12 +2,13 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CloverLeaf.Common.Infrastructure.Resources.Skins.Fertile"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <!--#region Colors-->
+    
+    <!--#region Brushes-->
     <SolidColorBrush x:Key="MainBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="AuxBrush" Color="#00B85F"/>
     <SolidColorBrush x:Key="FaintAuxBrush" Color="#00aa5f"/>
     <SolidColorBrush x:Key="IntenseAuxBrush" Color="#00d25f"/>
-    
+
     <LinearGradientBrush Opacity=".4" x:Key="BackgroundBrush">
         <GradientStop Color="#FFFFFF" Offset="0"/>
         <GradientStop Color="{Binding Source={StaticResource FaintAuxBrush}, Path=Color}" Offset="10.0"/>

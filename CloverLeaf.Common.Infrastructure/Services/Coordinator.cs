@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Serialization;
 
 namespace CloverLeaf.Common.Infrastructure.Services
 {
@@ -24,11 +25,28 @@ namespace CloverLeaf.Common.Infrastructure.Services
         #endregion
 
         #region Bindables
-        public BarrelRaceContest Contest { get; private set; } = new BarrelRaceContest();
+        BarrelRaceContest _contest = new BarrelRaceContest();
+        public BarrelRaceContest Contest { get => _contest; private set => SetProperty(ref _contest, value); }
+
+        bool _canSave = false;
+        public bool CanSave { get => _canSave && Saved; set { _canSave = value; RaisePropertyChanged("CanSave"); } }
+        public string SavePath { get; private set; }
         #endregion
 
         #region Internals
         Random Randomizer { get; } = new Random();
+        bool RefreshRequired { get; set; }
+        bool Saved
+        {
+            get
+            {
+                bool exists = false;
+                try { exists = File.Exists(SavePath); }
+                catch { return false; }
+                return exists;
+            }
+        }
+        //; public bool ContestAccuracyInvalidated { get; set; }
         #endregion
 
         #endregion
@@ -38,6 +56,7 @@ namespace CloverLeaf.Common.Infrastructure.Services
         {
             Logger = logger;
             DatabaseManager = databaseManager;
+
         }
         #endregion
 
@@ -64,6 +83,8 @@ namespace CloverLeaf.Common.Infrastructure.Services
                         return;
                     }
                 }
+            RefreshRequired = true;
+            CanSave = true;
             Contest.Teams.Add(team);
         }
 
@@ -72,6 +93,8 @@ namespace CloverLeaf.Common.Infrastructure.Services
             try
             {
                 Contest.Teams.Remove(team);
+                RefreshRequired = true;
+                CanSave = true;
             }
             catch (Exception e) { Logger.Error(e); }
         }
@@ -79,7 +102,8 @@ namespace CloverLeaf.Common.Infrastructure.Services
         public void Reset()
         {
             Contest = new BarrelRaceContest();
-            RaisePropertyChanged("Contest");
+            SavePath = string.Empty;
+            CanSave = false;
         }
 
         public void NavigateToNextRound()
@@ -94,17 +118,68 @@ namespace CloverLeaf.Common.Infrastructure.Services
             Contest.CurrentRound--;
         }
 
-        public void GenerateTeams()
+        public void GenerateTeams(bool shuffle = false)
         {
             while (Contest.Rounds.Count < Contest.TotalRounds)
                 Contest.Rounds.Add(new ObservableCollection<Team>());
             while (Contest.Rounds.Count > Contest.TotalRounds)
                 Contest.Rounds.RemoveAt(Contest.Rounds.Count - 1);
 
+            if (RefreshRequired)
+            {
+                for (int i = 0; i < Contest.Rounds[0].Count; i++)
+                    if (!Contest.Teams.Contains(Contest.Rounds[0][i]))
+                        for (int j = Contest.Rounds.Count-1; j >= 0; j--)
+                            Contest.Rounds[j].Remove(Contest.Rounds[0][i]);
+
+                for (int i = 0; i < Contest.Teams.Count; i++)
+                    if (!Contest.Rounds[0].Contains(Contest.Teams[i]))
+                        for (int j = 0; j < Contest.Rounds.Count; j++)
+                            Contest.Rounds[j].Add(new Team(Contest.Teams[i]));
+            }
+
+            // Copy all the displayed information to the round observablecollection
+            for (int i = 0; i < Contest.DisplayRounds.Count; i++)
+                for (int j = 0; j < Contest.DisplayRounds[i].Count; j++)
+                {
+                    var team = Contest.DisplayRounds[i][j];
+                    var index = Contest.Rounds[i].IndexOf(team);
+                    if (index < 0) continue;
+                    Contest.Rounds[i][index].RunTime = team.RunTime;
+                }
+
+            var displayRounds = new ObservableCollection<ObservableCollection<Team>>();
+
+            foreach (var round in Contest.Rounds)
+            {
+                displayRounds.Add(new ObservableCollection<Team>());
+                
+                for (int i = 0; i < round.Count; i++)
+                    displayRounds[displayRounds.Count - 1].Add(new Team(round[i]));
+            }
+
+
+            Contest.DisplayRounds = displayRounds;
+
+            if (shuffle && Contest.Randomize)
+                for (int i = 1; i < Contest.DisplayRounds.Count; i++)
+                    for (int j = 0; j < Contest.DisplayRounds[i].Count; j++)
+                        ExchangeValues(Randomizer.Next(Contest.DisplayRounds[i].Count), Randomizer.Next(Contest.DisplayRounds[i].Count), Contest.DisplayRounds[i]);
+                
+
+            /*
+            for (int i = 0; i < Contest.TotalRounds; i++)
+                for (int j = 0; j < Contest.Teams.Count; j++)
+                    for (int k = 0; k < Contest.Rounds[i].Count; k++)
+                        if (Contest.Teams.Contains())
+                            *
+
             for (int i = 0; i < Contest.TotalRounds; i++)
                 for (int j = 0; j < Contest.Teams.Count; j++)
                     if (!Contest.Rounds[i].Contains(Contest.Teams[j]))
                         Contest.Rounds[i].Add(new Team(Contest.Teams[j]));
+            */        
+
             Contest.CurrentRound = Contest.CurrentRound;
             /*
             //Contest.GeneratedTeams.Clear();
@@ -123,6 +198,17 @@ namespace CloverLeaf.Common.Infrastructure.Services
             double fastest = double.MaxValue;
             var teams = new List<Team>();
 
+            // Copy all the displayed information to the round observablecollection
+            for (int i = 0; i < Contest.DisplayRounds.Count; i++)
+                for (int j = 0; j < Contest.DisplayRounds[i].Count; j++)
+                {
+                    var team = Contest.DisplayRounds[i][j];
+                    var index = Contest.Rounds[i].IndexOf(team);
+                    if (index < 0) return;
+                    Contest.Rounds[i][index].RunTime = team.RunTime;
+                }
+
+            // Get the fastest times for each team
             Team currentTeam = new Team();
             for (int i = 0; i < Contest.Teams.Count; i++)
             {
@@ -130,9 +216,12 @@ namespace CloverLeaf.Common.Infrastructure.Services
                 {
                     currentTeam = Contest.Rounds[j][i];
                     var runTime = currentTeam.RunTime;
-                    if (runTime < fastest)
+                    if (runTime < fastest && runTime != 0)
                         fastest = runTime;
                 }
+
+                if (fastest == double.MaxValue)
+                    fastest = 0;
                 teams.Add(new Team() { Rider = currentTeam.Rider, Horse = currentTeam.Horse, RunTime = fastest });
                 fastest = double.MaxValue;
             }
@@ -169,7 +258,13 @@ namespace CloverLeaf.Common.Infrastructure.Services
                 var team = teams[i];
                 var difference = team.RunTime - fastest;
 
-                // TODO: Question Justin about this
+
+                if (team.RunTime == 0)
+                {
+                    Contest.Divisions[3].Teams.Add(team);
+                    continue;
+                }
+                
                 if (difference < .5) Contest.Divisions[0].Teams.Add(team);
                 else if (difference >= .5 && difference < 1.0) Contest.Divisions[1].Teams.Add(team);
                 else if (difference >= 1.0 && difference < 2.0) Contest.Divisions[2].Teams.Add(team);
@@ -218,6 +313,70 @@ namespace CloverLeaf.Common.Infrastructure.Services
                         writer.WriteLine($"\t{divisions[i].Teams[j].Rider}\t{divisions[i].Teams[j].Horse}\t\t{divisions[i].Teams[j].RunTime}");
                 }
             }
+        }
+
+        public bool LoadContest(string path)
+        {
+            try
+            {
+                BarrelRaceContest contest = null;
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                    contest = (BarrelRaceContest)new XmlSerializer(typeof(BarrelRaceContest)).Deserialize(stream);
+                if (contest != null)
+                    Contest = contest;
+                else
+                {
+                    MessageBox.Show("Sorry, the provided contest file failed to open.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("An error occured while loading a contest.\n{0}", ex);
+                MessageBox.Show("Sorry, the provided contest file failed to open.");
+                return false;
+            }
+            SavePath = path;
+            RefreshRequired = true;
+            return true;
+        }
+
+        public bool SaveContest(string path)
+        {
+            try
+            {
+                if (Path.GetExtension(path) != Core.CONTEST_EXTENSION_FILE)
+                    path += Core.CONTEST_EXTENSION_FILE;
+
+                using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                    new XmlSerializer(typeof(BarrelRaceContest)).Serialize(stream, Contest);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured while attempting to save the file. Please try again in another directory.", "Error!"
+                    , MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error("An error ocurred while attempting to save a contest file. \n{0}", ex);
+                return false;
+            }
+            CanSave = false;
+            SavePath = path;
+            return true;
+        }
+        #endregion
+
+        #region Utilities
+        bool ExchangeValues<T>(int index1, int index2, IList<T> collection) where T : class
+        {
+            try
+            {
+                T value1 = collection[index1];
+                T value2 = collection[index2];
+
+                collection[index1] = value2;
+                collection[index2] = value1;
+            }
+            catch { return false; }
+            return true;
         }
         #endregion
 

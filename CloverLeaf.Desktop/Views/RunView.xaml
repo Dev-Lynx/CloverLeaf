@@ -4,11 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CloverLeaf.Desktop.Views"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:coreControls="clr-namespace:CloverLeaf.Common.Infrastructure.Resources.Controls;assembly=CloverLeaf.Common.Infrastructure"
+             xmlns:coreExtensions="clr-namespace:CloverLeaf.Common.Infrastructure.Extensions;assembly=CloverLeaf.Common.Infrastructure"
              Background="{DynamicResource BackgroundBrush}"
              mc:Ignorable="d" d:DesignHeight="520" d:DesignWidth="520"
-             prism:ViewModelLocator.AutoWireViewModel="True">
+             prism:ViewModelLocator.AutoWireViewModel="True" Name="ParentControl">
     <DockPanel Margin="20 10">
         <DockPanel DockPanel.Dock="Top">
             <Button Style="{DynamicResource ImageButton}" ToolTip="Back" Command="{Binding BackCommand}">
@@ -24,11 +26,158 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource ImageButton}" Command="{Binding PreviousRoundCommand}" IsEnabled="{Binding Coordinator.Contest.CanNavigateToPreviousRound, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.ColumnSpan="3" Margin="50 0 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Width="0" Margin="0 0 10 0">
+                    <Grid.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RegActive}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard BeginTime="00:00:00">
+                                                <DoubleAnimation Storyboard.TargetProperty="Width" 
+                                                             From="0" To="350" BeginTime="00:00:00" Duration="00:00:0.7" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard BeginTime="00:00:00">
+                                                <DoubleAnimation Storyboard.TargetProperty="Width" 
+                                                             From="350" To="0" BeginTime="00:00:00" Duration="00:00:0.7" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Opacity=".7" HorizontalContentAlignment="Center" Style="{DynamicResource SolidComboBox}" FontWeight="Bold"  Background="{Binding Source={StaticResource AuxBrush}, Path=Color}" VerticalAlignment="Center" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="True" StaysOpenOnEdit="True" TextSearch.TextPath="{Binding Name}" SelectedItem="{Binding Rider, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding DatabaseManager.Riders}" Text="{Binding RiderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEditable="True">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock  TextAlignment="Center" Padding="2 0" Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <ComboBox Opacity=".7" HorizontalContentAlignment="Center" FontWeight="Bold" Background="{Binding Source={StaticResource AuxBrush}, Path=Color}" Style="{DynamicResource SolidComboBox}" VerticalAlignment="Center" Grid.Column="1" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="True" StaysOpenOnEdit="True" TextSearch.TextPath="{Binding Name}" SelectedItem="{Binding Horse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding DatabaseManager.Horses}" Text="{Binding HorseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEditable="True">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock  TextAlignment="Center" Padding="2 0" Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+
+
+
+                <Border Grid.Column="1" BorderBrush="#00FFFFFF" BorderThickness="0">
+                    <Border.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CanAdd, Mode=OneWay}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard BeginTime="00:00:00">
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0" To="0 0 -80 0" Duration="00:00:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard BeginTime="00:00:00">
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0 0 -80 0" To="0" Duration="00:00:0.3"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Button IsDefault="True" Style="{DynamicResource ImageButton}" Grid.Column="1" HorizontalAlignment="Center" Command="{Binding AddTeamCommand}">
+                        <Image Source="{DynamicResource ThumbsUpImage}" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Aliased" Stretch="Uniform" Height="40" Width="40">
+                            <Image.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" CenterX="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Image}, Path=ActualWidth, Converter={StaticResource HalfDoubleConverter}}" CenterY="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Image}, Path=ActualHeight, Converter={StaticResource HalfDoubleConverter}}"/>
+                            </Image.RenderTransform>
+                            <Image.Style>
+                                <Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CanAdd, Mode=OneWay}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard BeginTime="00:00:0.5">
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" From="1" To="1.2" Duration="00:00:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" From="1" To="1.2" Duration="00:00:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" BeginTime="00:00:.2" From="1.2" To="1" Duration="00:00:0.2"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" BeginTime="00:00:.2" From="1.2" To="1" Duration="00:00:0.2"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>
+                </Border>
+               
+                <Button Background="#FFFFFF" Style="{DynamicResource ImageButton}" Grid.Column="1" HorizontalAlignment="Center" Command="{Binding AddCommand}">
+                    <Image Source="{DynamicResource AddImage}" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Aliased" Stretch="Uniform" Height="40" Width="40">
+                        <Image.RenderTransform>
+                            <RotateTransform CenterX="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Image}, Path=ActualWidth, Converter={StaticResource HalfDoubleConverter}}" CenterY="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Image}, Path=ActualHeight, Converter={StaticResource HalfDoubleConverter}}" Angle="0" />
+                            <!--CenterX="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualWidth, Converter={StaticResource HalfDoubleConverter}}" CenterY="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualHeight, Converter={StaticResource HalfDoubleConverter}}"-->
+                        </Image.RenderTransform>
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RegActive, Mode=OneWay}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard BeginTime="00:00:00.000">
+                                                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" 
+                                                             From="0" To="135" BeginTime="00:00:00" Duration="00:00:0.7" />
+
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard BeginTime="00:00:00.000">
+                                                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" 
+                                                             From="135" To="0" BeginTime="00:00:00" Duration="00:00:0.7" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Button>
+            </Grid>
+
+            <Button Grid.Row="1" Style="{DynamicResource ImageButton}" Command="{Binding PreviousRoundCommand}" IsEnabled="{Binding Coordinator.Contest.CanNavigateToPreviousRound, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <Image Height="50" Source="{DynamicResource BackImage}" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Aliased"/>
-            </Button>            
-            <Button Grid.Column="1" Margin="10" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Content="Generate Divisions" Command="{Binding GenerateDivisionsCommand}"/>
-            <Button Grid.Column="2"  Style="{DynamicResource ImageButton}" Command="{Binding NextRoundCommand}" IsEnabled="{Binding Coordinator.Contest.CanNavigateToNextRound, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            </Button>
+            <Button Grid.Row="1" Grid.Column="1" Margin="10" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Content="Generate Divisions" Command="{Binding GenerateDivisionsCommand}"/>
+            <Button Grid.Row="1" Grid.Column="2"  Style="{DynamicResource ImageButton}" Command="{Binding NextRoundCommand}" IsEnabled="{Binding Coordinator.Contest.CanNavigateToNextRound, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <Image Height="50" Source="{DynamicResource NextImage}" RenderOptions.BitmapScalingMode="HighQuality" RenderOptions.EdgeMode="Aliased"/>
             </Button>
         </Grid>
@@ -54,15 +203,29 @@
                     <DataTemplate>
                         <Grid Margin="2">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="70"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Padding="0 2" Text="{Binding Rider.Name}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Opacity=".7" Foreground="White" Background="{DynamicResource AuxBrush}"/>
-                            <TextBlock Padding="0 2" Grid.Column="1" Text="{Binding Horse.Name}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Opacity=".7" Foreground="White" Background="{DynamicResource FaintAuxBrush}"/>
-                            <Border Opacity=".7" Margin="10 0" Grid.Column="2" BorderBrush="{DynamicResource AuxBrush}" BorderThickness=".5" CornerRadius="5" VerticalAlignment="Stretch">
-                                <coreControls:NumberTextBox TextAlignment="Center" FontWeight="ExtraBold" Opacity=".7" Foreground="{DynamicResource AuxBrush}" Text="{Binding RunTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}" />
+                            <Button Content="X" Margin="4 0" Opacity=".7"  Padding="6 3" VerticalAlignment="Center" ToolTip="Double click to remove this team.">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <prism:InvokeCommandAction Command="{Binding ElementName=ParentControl, Path=DataContext.RemoveTeamCommand}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <TextBlock Padding="0 2" Grid.Column="1" Text="{Binding Rider.Name}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Opacity=".7" Foreground="White" Background="{DynamicResource AuxBrush}"/>
+                            <TextBlock Padding="0 2" Grid.Column="2" Text="{Binding Horse.Name}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" Opacity=".7" Foreground="White" Background="{DynamicResource FaintAuxBrush}"/>
+                            <Border Opacity=".7" Margin="10 0" Grid.Column="3" BorderBrush="{DynamicResource AuxBrush}" BorderThickness=".5" CornerRadius="5" VerticalAlignment="Stretch">
+                                <coreControls:NumberTextBox TextAlignment="Center" FontWeight="ExtraBold" Opacity=".7" Foreground="{DynamicResource AuxBrush}" Text="{Binding RunTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N3}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="TextChanged">
+                                            <prism:InvokeCommandAction Command="{Binding RunTimeChangedCommand}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </coreControls:NumberTextBox>
                             </Border>
                         </Grid>
                     </DataTemplate>

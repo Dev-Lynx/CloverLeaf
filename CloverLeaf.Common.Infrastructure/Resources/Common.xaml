@@ -12,10 +12,19 @@
     <BitmapImage x:Key="MinimizeImage" UriSource="Images/Minimize Button.png"/>
     <BitmapImage x:Key="BackImage" UriSource="Images/Left Arrow.png"/>
     <BitmapImage x:Key="NextImage" UriSource="Images/Right Arrow.png"/>
+    <BitmapImage x:Key="AddImage" UriSource="Images/Add Icon.png"/>
+    <BitmapImage x:Key="ThumbsUpImage" UriSource="Images/Thumbs Up Icon.png"/>
+    <BitmapImage x:Key="CloverLeafImage" UriSource="Images/CloverLeaf.png"/>
+    <BitmapImage x:Key="SaveImage" UriSource="Images/Save Icon.png"/>
     <!--#endregion-->
 
     <!--#region Converters-->
     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <converters:DoubleStringNaNConverter x:Key="DoubleStringNaNConverter"/>
+    <converters:HalfDoubleConverter x:Key="HalfDoubleConverter"/>
+    <!--#endregion-->
+    
+    <!--#region Animations-->
+    
     <!--#endregion-->
 </ResourceDictionary>

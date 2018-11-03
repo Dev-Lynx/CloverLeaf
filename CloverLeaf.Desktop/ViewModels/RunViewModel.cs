@@ -1,5 +1,6 @@
 ﻿using CloverLeaf.Common.Infrastructure;
 using CloverLeaf.Common.Infrastructure.Extensions;
+using CloverLeaf.Common.Infrastructure.Models;
 using CloverLeaf.Common.Infrastructure.Services.Interfaces;
 using Prism.Commands;
 using Prism.Logging;
@@ -32,10 +33,43 @@ namespace CloverLeaf.Desktop.ViewModels
         public ICommand PreviousRoundCommand { get; }
         public ICommand NextRoundCommand { get; }
         public ICommand BackCommand { get; }
+        public ICommand AddTeamCommand { get; }
+        public ICommand RemoveTeamCommand { get; }
+        public ICommand AddCommand { get; }
+        public ICommand RunTimeChangedCommand { get; }
         #endregion
 
         #region Bindables
         public bool CanGenerateDivisions => false;
+
+        bool _regActive = false;
+        public bool RegActive { get => _regActive; set => SetProperty(ref _regActive, value); }
+
+        public bool CanAdd => !string.IsNullOrWhiteSpace(RiderName) && !string.IsNullOrWhiteSpace(HorseName);
+
+        string _riderName = "";
+        public string RiderName
+        {
+            get => _riderName;
+            set
+            {
+                SetProperty(ref _riderName, value);
+                RaisePropertyChanged("CanAdd");
+            }
+        }
+
+        string _horseName = "";
+        public string HorseName
+        {
+            get => _horseName;
+            set
+            {
+                SetProperty(ref _horseName, value);
+                RaisePropertyChanged("CanAdd");
+            }
+        }
+
+
         #endregion
 
         #region Internals
@@ -56,10 +90,14 @@ namespace CloverLeaf.Desktop.ViewModels
             PreviousRoundCommand = new DelegateCommand(OnNavigateToPreviousRound);
             NextRoundCommand = new DelegateCommand(OnNavigateToNextRound);
             GenerateDivisionsCommand = new DelegateCommand(OnGenerateDivisions);
+            AddTeamCommand = new DelegateCommand(OnAddTeam);
+            RemoveTeamCommand = new DelegateCommand<object>(OnRemoveTeam);
+            AddCommand = new DelegateCommand(OnAdd);
+            RunTimeChangedCommand = new DelegateCommand(OnRunTimeChanged);
         }
         #endregion
 
-         #region Methods
+        #region Methods
 
         #region Command Handlers
         async void OnBack()
@@ -87,6 +125,44 @@ namespace CloverLeaf.Desktop.ViewModels
             RegionManager.RequestNavigateToView(Core.MAIN_REGION, Core.DIVISIONS_VIEW);
             await view.FadeIn(3);
         }
+
+        void OnAdd()
+        {
+            RegActive = !RegActive;
+            RiderName = string.Empty;
+            HorseName = string.Empty;
+        }
+
+        void OnAddTeam()
+        {
+            Team team = new Team()
+            {
+                Rider = new Rider() { Name = RiderName.Trim() },
+                Horse = new Horse() { Name = HorseName.Trim() }
+            };
+
+            DatabaseManager.RegisterRider(team.Rider);
+            DatabaseManager.RegisterHorse(team.Horse);
+            Coordinator.AddTeam(team);
+
+            OnAdd();
+            Coordinator.GenerateTeams();
+        }
+
+        async void OnRemoveTeam(object obj)
+        {
+            if (!(obj is Grid)) return;
+
+            var container = (Grid)obj;
+            var team = (Team)container.DataContext;
+
+            await container.FadeOut(2);
+            Coordinator.RemoveTeam(team);
+            Coordinator.GenerateTeams();
+            container.Opacity = 1;
+        }
+
+        void OnRunTimeChanged() => Coordinator.CanSave = true;
         #endregion
 
         #endregion

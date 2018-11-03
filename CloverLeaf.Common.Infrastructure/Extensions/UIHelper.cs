@@ -5,12 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace CloverLeaf.Common.Infrastructure.Extensions
 {
     public static class UIHelper
     {
+        #region Properties
+        public static event EventHandler ViewChanged;
+        public static event EventHandler LoadComplete;
+        #endregion
+
         public static void RequestNavigateToView(this IRegionManager manager, string region, string view)
         {
             try
@@ -20,6 +27,7 @@ namespace CloverLeaf.Common.Infrastructure.Extensions
                     throw new NullReferenceException("The region manager could not locate the specified region or view.");
 
                 manager.RequestNavigate(region, control.GetType().Name);
+                ViewChanged?.Invoke(null, EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -27,6 +35,7 @@ namespace CloverLeaf.Common.Infrastructure.Extensions
             }
         }
 
+        #region Animations
         public static async Task FadeOut(this FrameworkElement element, double speed = 1, bool reappear = false)
         {
             if (speed == 0) speed = 1;
@@ -95,5 +104,64 @@ namespace CloverLeaf.Common.Infrastructure.Extensions
             while (!completed)
                 await Task.Delay(10);
         }
+        #endregion
+
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            T parent = null;
+            try
+            {
+                parent = VisualTreeHelper.GetParent(child) as T;
+            }
+            catch { return null; }
+            
+
+            if (parent != null)
+                return parent;
+            else
+                return FindParent<T>(parent);
+        }
+
+        public static void LoadInitiated() => LoadComplete?.Invoke(null, EventArgs.Empty);
+
+
+
+
+        #region ComboBox Helper
+        public static readonly DependencyProperty EditBackgroundProperty = DependencyProperty.RegisterAttached(
+        "EditBackground", typeof(Brush), typeof(UIHelper), new PropertyMetadata(default(Brush), EditBackgroundChanged));
+
+        [AttachedPropertyBrowsableForType(typeof(ComboBox))]
+        public static Brush GetEditBackground(DependencyObject element) => (Brush)element.GetValue(EditBackgroundProperty);
+
+        [AttachedPropertyBrowsableForType(typeof(ComboBox))]
+        public static void SetEditBackground(DependencyObject element, Brush value) => element.SetValue(EditBackgroundProperty, value);
+
+
+        private static void EditBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is ComboBox)) return;
+            var combo = d as ComboBox;
+            
+            if (!combo.IsLoaded)
+            {
+                RoutedEventHandler loaded = null;
+                combo.Loaded += loaded = (s, ev) =>
+                {
+                    EditBackgroundChanged(d, e);
+                    combo.Loaded -= loaded;
+                };
+                combo.Loaded += loaded;
+                return;
+            }
+
+            var part = combo.Template.FindName("PART_EditableTextBox", combo);
+            if (!(part is TextBox)) return;
+
+            var parent = ((TextBox)part).Parent;
+            if (!(parent is Border)) return;
+            ((Border)parent).Background = (Brush)e.NewValue;
+        }
+        #endregion
     }
 }

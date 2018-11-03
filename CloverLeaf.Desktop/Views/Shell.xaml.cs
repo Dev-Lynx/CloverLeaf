@@ -34,7 +34,7 @@ namespace CloverLeaf.Desktop.Views
             InitializeComponent();
             RegionManager = regionManager;
             Container = container;
-
+            
             RoutedEventHandler loaded = null;
             this.Loaded += loaded = (s, e) =>
             {

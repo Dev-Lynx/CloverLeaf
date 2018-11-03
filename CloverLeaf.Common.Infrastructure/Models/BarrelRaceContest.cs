@@ -5,18 +5,26 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace CloverLeaf.Common.Infrastructure.Models
 {
+    [Serializable]
     public class BarrelRaceContest : BindableBase
     {
         #region Properties
-        public ObservableCollection<Team> Teams { get; } = new ObservableCollection<Team>();
-        public ObservableCollection<ObservableCollection<Team>> Rounds { get; } = new ObservableCollection<ObservableCollection<Team>>();
+        public ObservableCollection<Team> Teams { get; set; } = new ObservableCollection<Team>();
+
+        public ObservableCollection<ObservableCollection<Team>> Rounds { get; set; } = new ObservableCollection<ObservableCollection<Team>>();
+        public ObservableCollection<ObservableCollection<Team>> DisplayRounds { get; set; } = new ObservableCollection<ObservableCollection<Team>>();
+        [XmlIgnore]
         public ObservableCollection<Team> GeneratedTeams { get; private set; } = new ObservableCollection<Team>();
-        public ObservableCollection<Division> Divisions { get; } = new ObservableCollection<Division>();
+        
+        public ObservableCollection<Division> Divisions { get; set; } = new ObservableCollection<Division>();
+        [XmlIgnore]
         public ObservableCollection<Division> DisplayDivisions { get; private set; } = new ObservableCollection<Division>();
 
+        [XmlIgnore]
         int _displayCount = -1;
         public int DisplayCount
         {
@@ -32,14 +40,16 @@ namespace CloverLeaf.Common.Infrastructure.Models
 
         public int TotalRounds { get; set; } = 1;
 
+        [XmlIgnore]
         int _currentRound = 1;
+        [XmlIgnore]
         public int CurrentRound
         {
             get => _currentRound;
             set
             {
                 _currentRound = value;
-                GeneratedTeams = Rounds[value - 1];
+                GeneratedTeams = DisplayRounds[value - 1];
                 RaisePropertyChanged("GeneratedTeams");
                 RaisePropertyChanged("CurrentRound");
                 RaisePropertyChanged("CanNavigateToPreviousRound");
@@ -47,8 +57,12 @@ namespace CloverLeaf.Common.Infrastructure.Models
             }
         }
 
+        [XmlIgnore]
         public bool CanNavigateToPreviousRound => CurrentRound > 1;
+        [XmlIgnore]
         public bool CanNavigateToNextRound => CurrentRound < TotalRounds;
+
+        public bool Randomize { get; set; } = true;
 
         #endregion
 

@@ -62,7 +62,7 @@
 
                                             <TextBlock Padding="0 2" TextAlignment="Center" FontWeight="Bold" Foreground="#FFFFFF" Background="{DynamicResource AuxBrush}" Opacity=".7" Text="{Binding Rider.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                                             <TextBlock Padding="0 2" TextAlignment="Center" Grid.Column="1" FontWeight="Bold" Foreground="#FFFFFF" Background="{DynamicResource FaintAuxBrush}" Opacity=".7" Text="{Binding Horse.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                            <TextBlock Opacity=".7" FontWeight="Bold" TextAlignment="Center" Margin="5 0" Grid.Column="2" Padding="0 2" Text="{Binding RunTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Foreground="#FFFFFF" Background="{DynamicResource AuxBrush}" />
+                                            <TextBlock Opacity=".7" FontWeight="Bold" TextAlignment="Center" Margin="5 0" Grid.Column="2" Padding="0 2" Text="{Binding RunTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N3}" Foreground="#FFFFFF" Background="{DynamicResource AuxBrush}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

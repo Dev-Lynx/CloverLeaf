@@ -94,13 +94,17 @@
     <Compile Include="Extensions\LoggerExtensions.cs" />
     <Compile Include="Extensions\UIHelper.cs" />
     <Compile Include="Models\BarrelRaceContest.cs" />
+    <Compile Include="Models\BindableModel.cs" />
     <Compile Include="Models\Division.cs" />
     <Compile Include="Models\Horse.cs" />
     <Compile Include="Models\Rider.cs" />
     <Compile Include="Models\Team.cs" />
+    <Compile Include="Resources\Behavior\LeftClickContextMenuButtonBehavior.cs" />
     <Compile Include="Resources\Controls\NumberTextBox.cs" />
     <Compile Include="Resources\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Resources\Converters\DoubleStringNaNConverter.cs" />
+    <Compile Include="Resources\Converters\HalfDoubleConverter.cs" />
+    <Compile Include="Resources\Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Services\ConsoleManager.cs" />
     <Compile Include="Services\Coordinator.cs" />
     <Compile Include="Services\Interfaces\ICoordinator.cs" />
@@ -168,6 +172,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Barrel Racing Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Add Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Thumbs Up Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\CloverLeaf.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Save Icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -15,11 +15,11 @@ namespace CloverLeaf.Desktop
     public partial class App : Application
     {
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            Core.Initialize();
+            await Core.Initialize(e.Args);
             new Bootstrapper().Run();
         }
 

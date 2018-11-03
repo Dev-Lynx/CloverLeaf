@@ -15,6 +15,7 @@ namespace CloverLeaf.Common.Infrastructure.Models
         #endregion
 
         #region Constructors
+        public Division() { }
         public Division(int index)
         {
             Index = index;
